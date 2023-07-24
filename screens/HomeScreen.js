@@ -61,10 +61,18 @@ export default HomeScreen = () => {
           <TrendingMovies data={trendingMovies} />
 
           {/* Upcoming List */}
-          <MovieList title="Upcoming" data={upcomingMovies} />
+          <MovieList
+            title="Upcoming"
+            data={upcomingMovies}
+            hideSeeAll={false}
+          />
 
           {/* Top Rated */}
-          <MovieList title="Top Rated" data={topRatedMovies} />
+          <MovieList
+            title="Top Rated"
+            data={topRatedMovies}
+            hideSeeAll={false}
+          />
         </ScrollView>
       </SafeAreaView>
     </View>

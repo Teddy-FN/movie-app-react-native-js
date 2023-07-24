@@ -11,7 +11,7 @@ const { width, height } = Dimensions.get("window");
 
 const TrendingMovies = ({ data }) => {
   const navigation = useNavigation();
-  const handleClick = () => {
+  const handleClick = (item) => {
     console.log("HELLO");
     navigation.navigate("Movie", item);
   };
@@ -22,7 +22,7 @@ const TrendingMovies = ({ data }) => {
       <Carousel
         data={data}
         renderItem={(items) => (
-          <MovieCard items={items} handleClick={handleClick} />
+          <MovieCard handleClick={() => handleClick(items)} />
         )}
         firstItem={1}
         inactiveSlideOpacity={0.6}
