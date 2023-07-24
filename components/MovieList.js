@@ -14,7 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 // Responsive Design
 const { width, height } = Dimensions.get("window");
 
-const MovieList = ({ title, data }) => {
+const MovieList = ({ title, data, hideSeeAll }) => {
   const name = "HELLO THIS IS MOVIE";
   const navigation = useNavigation();
 
@@ -22,11 +22,13 @@ const MovieList = ({ title, data }) => {
     <View className="mb-8 space-y-4">
       <View className="mx-4 flex-row justify-between items-center">
         <Text className="text-white text-xl font-bold">{title}</Text>
-        <TouchableOpacity>
-          <Text style={theme.text} className="text-lg">
-            See All
-          </Text>
-        </TouchableOpacity>
+        {!hideSeeAll && (
+          <TouchableOpacity>
+            <Text style={theme.text} className="text-lg">
+              See All
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
       {/* Movie Row */}
       <ScrollView
@@ -36,7 +38,7 @@ const MovieList = ({ title, data }) => {
           paddingHorizontal: 15,
         }}
       >
-        {data.map((items, index) => {
+        {data?.map((items, index) => {
           return (
             <TouchableWithoutFeedback
               key={index}

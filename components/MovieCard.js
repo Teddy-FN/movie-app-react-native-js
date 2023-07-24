@@ -1,18 +1,12 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableWithoutFeedback,
-  Dimensions,
-  Image,
-} from "react-native";
+import { TouchableWithoutFeedback, Dimensions, Image } from "react-native";
 
 // Responsive Design
 const { width, height } = Dimensions.get("window");
 
-const MovieCard = ({ items, handleClick }) => {
+const MovieCard = ({ handleClick }) => {
   return (
-    <TouchableWithoutFeedback onPress={() => handleClick()}>
+    <TouchableWithoutFeedback onPress={handleClick}>
       <Image
         source={require("../assets/images/moviePoster1.png")}
         style={{
