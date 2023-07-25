@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import { theme } from "../theme";
 import { LinearGradient } from "expo-linear-gradient";
 import Cast from "../components/Cast";
 import MovieList from "../components/MovieList";
+import Loading from "../components/Loading";
 
 const { height, width } = Dimensions.get("window");
 const ios = Platform.OS == "ios";
@@ -28,16 +29,50 @@ const MovieScreen = () => {
   const { params: items } = useRoute();
   const navigation = useNavigation();
   const [isFavorite, setIsFavorite] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [cast, setCase] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   const [similiarMovies, setSimiliarMovies] = useState([
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
   ]);
+
+  // Loading
 
   const name = "HELLO THIS IS MOVIE";
 
   useEffect(() => {
     // Call the APi Details
   }, [items]);
+
+  const MOVIE_HERO = useMemo(() => {
+    if (loading) {
+      return (
+        <View>
+          <Image
+            source={require("../assets/images/moviePoster2.png")}
+            style={{
+              width,
+              height: height * 0.55,
+            }}
+          />
+          <LinearGradient
+            colors={[
+              "transparent",
+              "rgba(23, 23, 23, 0.8)",
+              "rgba(23, 23, 23, 1)",
+            ]}
+            style={{ width, height: height * 0.55 }}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            className="absolute bottom-0"
+          ></LinearGradient>
+        </View>
+      );
+    }
+
+    if (!loading) {
+      return <Loading />;
+    }
+  }, [loading]);
 
   return (
     <ScrollView
@@ -69,26 +104,9 @@ const MovieScreen = () => {
             />
           </TouchableOpacity>
         </SafeAreaView>
-        <View>
-          <Image
-            source={require("../assets/images/moviePoster2.png")}
-            style={{
-              width,
-              height: height * 0.55,
-            }}
-          />
-          <LinearGradient
-            colors={[
-              "transparent",
-              "rgba(23, 23, 23, 0.8)",
-              "rgba(23, 23, 23, 1)",
-            ]}
-            style={{ width, height: height * 0.55 }}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            className="absolute bottom-0"
-          ></LinearGradient>
-        </View>
+
+        {/* Movie Hero */}
+        {MOVIE_HERO}
       </View>
 
       {/* Movie Details */}
