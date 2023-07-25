@@ -14,11 +14,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 // Icon
 import { MagnifyingGlassIcon } from "react-native-heroicons/solid";
 import { useNavigation } from "@react-navigation/native";
+import Loading from "../components/Loading";
 
 const { height, width } = Dimensions.get("window");
 
 const SearchScreen = () => {
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [result, setResult] = useState([]);
   const nameMovie = "Movie Name Here Lorem Ipsum";
@@ -37,7 +39,10 @@ const SearchScreen = () => {
   }, [search]);
 
   const RESULT = useMemo(() => {
-    if (result.length > 1) {
+    if (loading && result.length < 1) {
+      return <Loading />;
+    }
+    if (!loading && result.length > 1) {
       return (
         <ScrollView
           showsHorizontalScrollIndicator={false}
@@ -77,7 +82,7 @@ const SearchScreen = () => {
       );
     }
 
-    if (result.length < 1) {
+    if (!loading && result.length < 1) {
       return (
         <View className="flex-1 justify-center items-center">
           <Image
@@ -93,7 +98,7 @@ const SearchScreen = () => {
         </View>
       );
     }
-  }, [result]);
+  }, [result, loading]);
 
   return (
     <SafeAreaView className="bg-neutral-800 flex-1">
