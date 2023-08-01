@@ -13,10 +13,13 @@ import { useNavigation } from "@react-navigation/native";
 
 // Responsive Design
 const { width, height } = Dimensions.get("window");
+import { IMG_500_SIZE } from "../utils/imgLink";
+import { fallbackMoviePoster } from "../api/moviedb";
 
 const MovieList = ({ title, data, hideSeeAll }) => {
   const name = "HELLO THIS IS MOVIE";
   const navigation = useNavigation();
+  console.log("DATA MovieList =>", data);
 
   return (
     <View className="mb-8 space-y-4">
@@ -39,6 +42,7 @@ const MovieList = ({ title, data, hideSeeAll }) => {
         }}
       >
         {data?.map((items, index) => {
+          console.log("ITEMS SCROLL VIEW =>", items);
           return (
             <TouchableWithoutFeedback
               key={index}
@@ -46,7 +50,11 @@ const MovieList = ({ title, data, hideSeeAll }) => {
             >
               <View className="space-y-1 mr-4">
                 <Image
-                  source={require("../assets/images/moviePoster2.png")}
+                  source={{
+                    uri:
+                      `${IMG_500_SIZE(items?.poster_path)}` ||
+                      fallbackMoviePoster,
+                  }}
                   style={{
                     width: width * 0.33,
                     height: height * 0.22,
@@ -54,7 +62,9 @@ const MovieList = ({ title, data, hideSeeAll }) => {
                   className="rounded-3xl"
                 />
                 <Text className="text-neutral-300 ml-1">
-                  {name.length > 14 ? `${name.slice(0, 14)}....` : name}
+                  {items.original_title?.length > 14
+                    ? `${items.original_title?.slice(0, 14)}....`
+                    : items.original_title}
                 </Text>
               </View>
             </TouchableWithoutFeedback>
