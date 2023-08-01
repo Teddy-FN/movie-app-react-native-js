@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -22,23 +22,56 @@ import MovieList from "../components/MovieList";
 import { useNavigation } from "@react-navigation/native";
 import Loading from "../components/Loading";
 
+// Fetching Data
+import { fetchDataTrendingMovies } from "../api/moviedb";
+import { fetchDataUpcomingMovies } from "../api/moviedb";
+import { fetchDataTopRatedMovies } from "../api/moviedb";
+
 const platforms = Platform.OS === "ios";
 export default HomeScreen = () => {
   const navigation = useNavigation();
-  const [trendingMovies, setTrendingMovies] = useState([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-  ]);
-
-  const [upcomingMovies, setUpcomingMovies] = useState([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-  ]);
-
-  const [topRatedMovies, setTopRatedMovies] = useState([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-  ]);
+  const [trendingMovies, setTrendingMovies] = useState([]);
+  const [upcomingMovies, setUpcomingMovies] = useState([]);
+  const [topRatedMovies, setTopRatedMovies] = useState([]);
 
   // Loading
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchDataTrending();
+    fetchDataUpcoming();
+    fetchDataTopRated();
+  }, []);
+
+  // Function FetchData
+  const fetchDataTrending = async () => {
+    const data = await fetchDataTrendingMovies();
+    if (data?.status === 200) {
+      console.log("HELLO");
+      console.log("data data =>", data.data.results);
+      setTrendingMovies((prevState) => [...prevState, ...data.data.results]);
+    }
+  };
+
+  const fetchDataUpcoming = async () => {
+    const data = await fetchDataUpcomingMovies();
+    if (data?.status === 200) {
+      console.log("HELLO");
+      console.log("data data =>", data.data.results);
+      setUpcomingMovies((prevState) => [...prevState, ...data.data.results]);
+    }
+  };
+
+  const fetchDataTopRated = async () => {
+    const data = await fetchDataTopRatedMovies();
+    if (data?.status === 200) {
+      console.log("HELLO");
+      console.log("data data =>", data.data.results);
+      setTopRatedMovies((prevState) => [...prevState, ...data.data.results]);
+    }
+  };
+
+  console.log("trendingMovies", trendingMovies);
 
   const MOVIES_LIST = useMemo(() => {
     if (loading) {
@@ -54,25 +87,31 @@ export default HomeScreen = () => {
           }}
         >
           {/* Trending */}
-          <TrendingMovies data={trendingMovies} />
+          {trendingMovies.length > 0 && (
+            <TrendingMovies data={trendingMovies} />
+          )}
 
           {/* Upcoming List */}
-          <MovieList
-            title="Upcoming"
-            data={upcomingMovies}
-            hideSeeAll={false}
-          />
+          {upcomingMovies.length > 0 && (
+            <MovieList
+              title="Upcoming"
+              data={upcomingMovies}
+              hideSeeAll={false}
+            />
+          )}
 
           {/* Top Rated */}
-          <MovieList
-            title="Top Rated"
-            data={topRatedMovies}
-            hideSeeAll={false}
-          />
+          {topRatedMovies.length > 0 && (
+            <MovieList
+              title="Top Rated"
+              data={topRatedMovies}
+              hideSeeAll={false}
+            />
+          )}
         </ScrollView>
       );
     }
-  }, [loading]);
+  }, [loading, trendingMovies, upcomingMovies, topRatedMovies]);
 
   return (
     <View className="flex-1 bg-neutral-800">
