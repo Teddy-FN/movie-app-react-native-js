@@ -17,10 +17,7 @@ import { IMG_500_SIZE } from "../utils/imgLink";
 import { fallbackMoviePoster } from "../api/moviedb";
 
 const MovieList = ({ title, data, hideSeeAll }) => {
-  const name = "HELLO THIS IS MOVIE";
   const navigation = useNavigation();
-  console.log("DATA MovieList =>", data);
-
   return (
     <View className="mb-8 space-y-4">
       <View className="mx-4 flex-row justify-between items-center">
@@ -42,7 +39,6 @@ const MovieList = ({ title, data, hideSeeAll }) => {
         }}
       >
         {data?.map((items, index) => {
-          console.log("ITEMS SCROLL VIEW =>", items);
           return (
             <TouchableWithoutFeedback
               key={index}
@@ -51,9 +47,9 @@ const MovieList = ({ title, data, hideSeeAll }) => {
               <View className="space-y-1 mr-4">
                 <Image
                   source={{
-                    uri:
-                      `${IMG_500_SIZE(items?.poster_path)}` ||
-                      fallbackMoviePoster,
+                    uri: items?.poster_path
+                      ? `${IMG_500_SIZE(items?.poster_path)}`
+                      : fallbackMoviePoster,
                   }}
                   style={{
                     width: width * 0.33,

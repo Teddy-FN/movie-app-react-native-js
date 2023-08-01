@@ -11,8 +11,9 @@ const MovieCard = ({ handleClick, data }) => {
     <TouchableWithoutFeedback onPress={handleClick}>
       <Image
         source={{
-          uri:
-            `${IMG_500_SIZE(data?.item?.backdrop_path)}` || fallbackMoviePoster,
+          uri: data?.item?.backdrop_path
+            ? `${IMG_500_SIZE(data?.item?.backdrop_path)}`
+            : fallbackMoviePoster,
         }}
         style={{
           width: width * 0.6,

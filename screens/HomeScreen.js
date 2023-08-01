@@ -47,8 +47,6 @@ export default HomeScreen = () => {
   const fetchDataTrending = async () => {
     const data = await fetchDataTrendingMovies();
     if (data?.status === 200) {
-      console.log("HELLO");
-      console.log("data data =>", data.data.results);
       setTrendingMovies((prevState) => [...prevState, ...data.data.results]);
     }
   };
@@ -56,8 +54,6 @@ export default HomeScreen = () => {
   const fetchDataUpcoming = async () => {
     const data = await fetchDataUpcomingMovies();
     if (data?.status === 200) {
-      console.log("HELLO");
-      console.log("data data =>", data.data.results);
       setUpcomingMovies((prevState) => [...prevState, ...data.data.results]);
     }
   };
@@ -65,13 +61,9 @@ export default HomeScreen = () => {
   const fetchDataTopRated = async () => {
     const data = await fetchDataTopRatedMovies();
     if (data?.status === 200) {
-      console.log("HELLO");
-      console.log("data data =>", data.data.results);
       setTopRatedMovies((prevState) => [...prevState, ...data.data.results]);
     }
   };
-
-  console.log("trendingMovies", trendingMovies);
 
   const MOVIES_LIST = useMemo(() => {
     if (loading) {
