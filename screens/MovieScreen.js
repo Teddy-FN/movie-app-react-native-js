@@ -18,6 +18,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import Cast from "../components/Cast";
 import MovieList from "../components/MovieList";
 import Loading from "../components/Loading";
+import {
+  fetchDataCreditMovieDetails,
+  fetchDataMovieDetails,
+  fetchDataSimiliarMovieDetails,
+} from "../api/moviedb";
+import { IMG_500_SIZE } from "../utils/imgLink";
+import { fallbackMoviePoster } from "../api/moviedb";
 
 const { height, width } = Dimensions.get("window");
 const ios = Platform.OS == "ios";
@@ -30,25 +37,56 @@ const MovieScreen = () => {
   const navigation = useNavigation();
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [cast, setCase] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-  const [similiarMovies, setSimiliarMovies] = useState([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-  ]);
-
-  // Loading
-
-  const name = "HELLO THIS IS MOVIE";
+  const [dataDetail, setDataDetail] = useState({});
+  const [cast, setCase] = useState([]);
+  const [similiarMovies, setSimiliarMovies] = useState([]);
 
   useEffect(() => {
+    setLoading(true);
+    if (items?.item?.id || items?.id) {
+      fetchDataDetail(items?.item?.id || items?.id);
+      fetchDataCreditDetail(items?.item?.id || items?.id);
+      fetchDataSimiliarMoviesDetail(items?.item?.id || items?.id);
+    }
     // Call the APi Details
   }, [items]);
 
+  const fetchDataDetail = async (id) => {
+    const data = await fetchDataMovieDetails(id);
+    if (data.status === 200) {
+      setLoading(false);
+      setDataDetail(data.data);
+    }
+  };
+
+  const fetchDataCreditDetail = async (id) => {
+    const data = await fetchDataCreditMovieDetails(id);
+    if (data.status === 200) {
+      setCase(data.data.cast);
+    }
+  };
+
+  const fetchDataSimiliarMoviesDetail = async (id) => {
+    const data = await fetchDataSimiliarMovieDetails(id);
+    if (data.status === 200) {
+      setSimiliarMovies(data.data.results);
+    }
+  };
+
   const MOVIE_HERO = useMemo(() => {
     if (loading) {
+      return <Loading />;
+    }
+
+    if (!loading) {
       return (
         <View>
           <Image
-            source={require("../assets/images/moviePoster2.png")}
+            source={{
+              uri: dataDetail.poster_path
+                ? IMG_500_SIZE(dataDetail.poster_path)
+                : fallbackMoviePoster,
+            }}
             style={{
               width,
               height: height * 0.55,
@@ -68,11 +106,61 @@ const MovieScreen = () => {
         </View>
       );
     }
+  }, [loading, dataDetail]);
 
+  const MOVIE_DETAILS = useMemo(() => {
     if (!loading) {
-      return <Loading />;
+      return (
+        <View style={{ marginTop: -(height * 0.09) }} className="space-y-3">
+          <Text className="text-white text-center text-3xl font-bold tracking-wider">
+            {dataDetail?.original_title}
+          </Text>
+
+          {/* Status, Realese, Runtime */}
+          <Text className="text-neutral-400 font-semibold text-base text-center">
+            {dataDetail.release_date} * {dataDetail.runtime} min
+          </Text>
+
+          {/* Genres */}
+          <View className="flex-row justify-center mx-4 space-x-2">
+            {dataDetail?.genres?.map((items, index) => {
+              return (
+                <Text
+                  className="text-neutral-400 font-semibold text-base text-center"
+                  key={index}
+                >
+                  {items.name} *
+                </Text>
+              );
+            })}
+          </View>
+
+          {/* Description */}
+          <Text className="text-neutral-400 mx-4 tracking-wide">
+            {dataDetail.overview}
+          </Text>
+        </View>
+      );
     }
-  }, [loading]);
+  }, [loading, dataDetail]);
+
+  const CAST_MOVIE_DETAILS = useMemo(() => {
+    if (!loading) {
+      return <Cast cast={cast} navigation={navigation} />;
+    }
+  }, [loading, cast, navigation]);
+
+  const SIMILIAR_MOVIE_DETAILS = useMemo(() => {
+    if (!loading) {
+      return (
+        <MovieList
+          title="Similiar Movie"
+          data={similiarMovies}
+          hideSeeAll={true}
+        />
+      );
+    }
+  }, [loading, similiarMovies]);
 
   return (
     <ScrollView
@@ -110,47 +198,13 @@ const MovieScreen = () => {
       </View>
 
       {/* Movie Details */}
-      <View style={{ marginTop: -(height * 0.09) }} className="space-y-3">
-        <Text className="text-white text-center text-3xl font-bold tracking-wider">
-          {name}
-        </Text>
-
-        {/* Status, Realese, Runtime */}
-        <Text className="text-neutral-400 font-semibold text-base text-center">
-          Realesed * 2020 * 170 min
-        </Text>
-
-        {/* Genres */}
-        <View className="flex-row justify-center mx-4 space-x-2">
-          <Text className="text-neutral-400 font-semibold text-base text-center">
-            Action *
-          </Text>
-          <Text className="text-neutral-400 font-semibold text-base text-center">
-            Thrill *
-          </Text>
-          <Text className="text-neutral-400 font-semibold text-base text-center">
-            Comedy *
-          </Text>
-        </View>
-
-        {/* Description */}
-        <Text className="text-neutral-400 mx-4 tracking-wide">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat.
-        </Text>
-      </View>
+      {MOVIE_DETAILS}
 
       {/* Cast */}
-      <Cast cast={cast} navigation={navigation} />
+      {CAST_MOVIE_DETAILS}
 
       {/* Similiar Movies */}
-      <MovieList
-        title="Similiar Movie"
-        data={similiarMovies}
-        hideSeeAll={true}
-      />
+      {SIMILIAR_MOVIE_DETAILS}
     </ScrollView>
   );
 };

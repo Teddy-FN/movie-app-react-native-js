@@ -7,8 +7,10 @@ const TRENDING_MOVIES = `${BASE_URL}/trending/all/day?api_key=${api_key}`;
 const UPCOMING_MOVIES = `${BASE_URL}/movie/upcoming?api_key=${api_key}`;
 const TOP_RATED_MOVIES = `${BASE_URL}/movie/top_rated?api_key=${api_key}`;
 
+// DETAIL MOVIES, CREDIT MOVIES, SIMILIAR
+const API_DETAILS_CREDIT = `${BASE_URL}/movie`;
+
 // FALL BACK MOVIE IMAGE
-// fallback images
 export const fallbackMoviePoster =
   "https://img.myloview.com/stickers/white-laptop-screen-with-hd-video-technology-icon-isolated-on-grey-background-abstract-circle-random-dots-vector-illustration-400-176057922.jpg";
 export const fallbackPersonImage =
@@ -40,4 +42,16 @@ export const fetchDataUpcomingMovies = () => {
 
 export const fetchDataTopRatedMovies = () => {
   return API_CALL(TOP_RATED_MOVIES);
+};
+
+export const fetchDataMovieDetails = (id) => {
+  return API_CALL(`${API_DETAILS_CREDIT}/${id}?api_key=${api_key}`);
+};
+
+export const fetchDataCreditMovieDetails = (id) => {
+  return API_CALL(`${API_DETAILS_CREDIT}/${id}/credits?api_key=${api_key}`);
+};
+
+export const fetchDataSimiliarMovieDetails = (id) => {
+  return API_CALL(`${API_DETAILS_CREDIT}/${id}/similar?api_key=${api_key}`);
 };
