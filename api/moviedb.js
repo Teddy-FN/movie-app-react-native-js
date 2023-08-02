@@ -8,6 +8,9 @@ const UPCOMING_MOVIES = `${BASE_URL}/movie/upcoming?api_key=${api_key}`;
 const POPULAR_MOVIES = `${BASE_URL}/movie/popular?api_key=${api_key}`;
 const TOP_RATED_MOVIES = `${BASE_URL}/movie/top_rated?api_key=${api_key}`;
 
+// Search Movies
+const SEARCH_MOVIES = `${BASE_URL}/search/movie?api_key=${api_key}`;
+
 // Person Details
 const PERSON_DETAILS = `${BASE_URL}/person`;
 // Person Movie Details
@@ -74,4 +77,9 @@ export const fetchDataPersonMovies = (id) => {
   return API_CALL(
     `${PERSON_MOVIE_DETAILS}/${id}/movie_credits?api_key=${api_key}`
   );
+};
+
+// SEARCH MOVIES
+export const fetchDataSearchMovies = (params) => {
+  return API_CALL(`${SEARCH_MOVIES}`, params);
 };

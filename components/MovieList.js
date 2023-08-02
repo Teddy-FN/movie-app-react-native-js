@@ -17,7 +17,6 @@ import { IMG_500_SIZE } from "../utils/imgLink";
 import { fallbackMoviePoster } from "../api/moviedb";
 
 const MovieList = ({ title, data, hideSeeAll }) => {
-  console.log("DATA MOVIE LIST BRAY =>", data);
   const navigation = useNavigation();
   return (
     <View className="mb-8 space-y-4">

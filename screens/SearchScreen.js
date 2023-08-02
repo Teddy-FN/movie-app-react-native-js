@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   View,
   Text,
@@ -15,13 +15,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MagnifyingGlassIcon } from "react-native-heroicons/solid";
 import { useNavigation } from "@react-navigation/native";
 import Loading from "../components/Loading";
+import { debounce } from "lodash";
+import { fetchDataSearchMovies } from "../api/moviedb";
+import { IMG_500_SIZE } from "../utils/imgLink";
+import { fallbackMoviePoster } from "../api/moviedb";
 
 const { height, width } = Dimensions.get("window");
 
 const SearchScreen = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search] = useState("");
   const [result, setResult] = useState([]);
   const nameMovie = "Movie Name Here Lorem Ipsum";
 
@@ -37,6 +41,29 @@ const SearchScreen = () => {
       );
     }
   }, [search]);
+
+  const handleSearch = (e) => {
+    if (e && e.length > 2) {
+      setLoading(true);
+      fetchDataSearchMovies({
+        query: e,
+        include_adult: false,
+        language: "en-US",
+        page: 1,
+      }).then((response) => {
+        if (response.status === 200) {
+          setLoading(false);
+          console.log("response.data response.data =>", response.data);
+          setResult(response.data.results);
+        }
+      });
+    } else {
+      setLoading(false);
+      setResult([]);
+    }
+  };
+
+  const handleTextDeBounce = useCallback(debounce(handleSearch, 400), []);
 
   const RESULT = useMemo(() => {
     if (loading && result.length < 1) {
@@ -62,16 +89,20 @@ const SearchScreen = () => {
                   <View className="space-y-2 mb-2">
                     <Image
                       className="rounded-3xl"
-                      source={require("../assets/images/moviePoster2.png")}
+                      source={{
+                        uri: items?.poster_path
+                          ? IMG_500_SIZE(items?.poster_path)
+                          : fallbackMoviePoster,
+                      }}
                       style={{
                         height: height * 0.3,
                         width: width * 0.44,
                       }}
                     />
                     <Text className="text-neutral-300 ml-1">
-                      {nameMovie.length > 22
-                        ? `${nameMovie.slice(0, 22)}....`
-                        : nameMovie}
+                      {items?.original_title?.length > 22
+                        ? `${items?.original_title?.slice(0, 22)}....`
+                        : items?.original_title}
                     </Text>
                   </View>
                 </TouchableWithoutFeedback>
@@ -104,8 +135,7 @@ const SearchScreen = () => {
     <SafeAreaView className="bg-neutral-800 flex-1">
       <View className="mx-4 mb-3 flex-row justify-between items-center border border-neutral-500 rounded-full">
         <TextInput
-          onChange={(e) => setSearch(e.nativeEvent.text)}
-          value={search}
+          onChangeText={handleTextDeBounce}
           placeholder="Search Movie"
           placeholderTextColor={"lightgray"}
           className="p-3 m-1 flex-1 text-base font-semibold text-white tracking-wide"
