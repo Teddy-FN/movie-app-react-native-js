@@ -26,34 +26,48 @@ import Loading from "../components/Loading";
 import { fetchDataTrendingMovies } from "../api/moviedb";
 import { fetchDataUpcomingMovies } from "../api/moviedb";
 import { fetchDataTopRatedMovies } from "../api/moviedb";
+import { fetchDataPopularMovies } from "../api/moviedb";
 
 const platforms = Platform.OS === "ios";
 export default HomeScreen = () => {
   const navigation = useNavigation();
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [upcomingMovies, setUpcomingMovies] = useState([]);
+  const [popularMovies, setPopularMovies] = useState([]);
   const [topRatedMovies, setTopRatedMovies] = useState([]);
 
   // Loading
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     fetchDataTrending();
     fetchDataUpcoming();
     fetchDataTopRated();
+    fetchDataPopular();
   }, []);
 
   // Function FetchData
   const fetchDataTrending = async () => {
     const data = await fetchDataTrendingMovies();
     if (data?.status === 200) {
+      setLoading(false);
       setTrendingMovies((prevState) => [...prevState, ...data.data.results]);
+    }
+  };
+
+  const fetchDataPopular = async () => {
+    const data = await fetchDataPopularMovies();
+    if (data.status === 200) {
+      setLoading(false);
+      setPopularMovies((prevState) => [...prevState, ...data.data.results]);
     }
   };
 
   const fetchDataUpcoming = async () => {
     const data = await fetchDataUpcomingMovies();
     if (data?.status === 200) {
+      setLoading(false);
       setUpcomingMovies((prevState) => [...prevState, ...data.data.results]);
     }
   };
@@ -61,6 +75,7 @@ export default HomeScreen = () => {
   const fetchDataTopRated = async () => {
     const data = await fetchDataTopRatedMovies();
     if (data?.status === 200) {
+      setLoading(false);
       setTopRatedMovies((prevState) => [...prevState, ...data.data.results]);
     }
   };
@@ -81,6 +96,15 @@ export default HomeScreen = () => {
           {/* Trending */}
           {trendingMovies.length > 0 && (
             <TrendingMovies data={trendingMovies} />
+          )}
+
+          {/* Popular */}
+          {popularMovies.length > 0 && (
+            <MovieList
+              title="Popular"
+              data={popularMovies}
+              hideSeeAll={false}
+            />
           )}
 
           {/* Upcoming List */}
